@@ -1,0 +1,54 @@
+ESCENARIO RUINAS DEL COMPAÑERO — escena jugable (Unity 6, 2D URP)
+=================================================================
+
+Abrir
+1. Unity Hub > Add > Add project from disk > carpeta PixelArt.
+2. Al abrir (o al volver a Unity si ya estaba abierto), el script de montaje
+   (Assets/_Montaje) crea Assets/Scenes/Level01_Jugable.unity y se borra solo.
+   Si tenías una escena con cambios sin guardar, Unity pregunta antes.
+3. Abre Level01_Jugable, pestaña Game a 1920x1080 (16:9) y pulsa Play.
+   A/D o flechas para andar, Espacio para saltar. Llega al portal de la derecha.
+   La escena 02_Level01 y los sprites del compañero no se tocan.
+
+Jerarquía de la escena
+- Global Light 2D: luz global (el Renderer 2D de URP la necesita).
+- Background: escenario.jpg entero, 100 px por unidad, centrado en (0, 0).
+- Colisiones: BoxCollider2D invisibles en la capa Ground encima de lo que se ve:
+  suelos, puente de columnas, plataforma de los jarrones, repisas, nave rota y
+  estatua. Las escaleras son cajas finas giradas (rampas). Dos muros en los bordes
+  (capa Default, para no poder saltar pegado a ellos).
+- Meta_Portal: BoxCollider2D con Is Trigger delante del portal + PortalTrigger.
+- Player: personaje "Hooded Protagonist" de Penzilla (itch.io). La hoja
+  Assets/Art/Player/AnimationSheet_Character.png se corta en fotogramas de 32x32
+  (75 px por unidad, pivote abajo en el centro) con nombres idle_0, walk_0, run_0,
+  jump_0, die_0, attack_0... La escena usa idle_0. Rigidbody2D (Gravity Scale 3,
+  rotación Z congelada), CapsuleCollider2D con el Physics Material NoFriction,
+  hijo GroundCheck en los pies y el script del compañero PlayerController2D con
+  valores para este tamaño: Max Speed 2.5, Acceleration 20, Deceleration 25,
+  Jump Force 10 (salta ~1.7 unidades), Max Fall Speed 8, Ground Check Radius 0.05,
+  Ground Layer = Ground.
+- Main Camera: ortográfica, Size 1.8 (enseña 360 px de alto del dibujo) y CameraFollow.
+
+Scripts nuevos (Assets/Scripts/World)
+- CameraFollow.cs: en LateUpdate sigue al jugador en X e Y y con Mathf.Clamp no
+  deja que la cámara enseñe nada fuera del dibujo (media pantalla = Size y Size * aspect).
+- PortalTrigger.cs: OnTriggerEnter2D + CompareTag("Player"): mensaje en la consola,
+  desactiva PlayerController2D y para al personaje.
+
+Recorrido
+Empiezas abajo, junto a los jarrones. A la izquierda, la escalera grande sube a la
+repisa del cristal; desde ella sale otra escalera al puente de columnas. Desde el
+puente se salta a la plataforma de los jarrones y por la escalera de arriba se llega
+al cristal de arriba. A la derecha: nave rota, estatua y el portal (meta).
+La plataforma de arriba a la derecha (la del robot) es solo decorado.
+
+Créditos
+- Escenario y hoja de objetos: el compañero.
+- Personaje: "Hooded Protagonist" de Penzilla Design
+  (https://penzilla.itch.io/hooded-protagonist). Precio libre; el autor permite
+  usarlo gratis en proyectos no comerciales (como los de clase). Si se usa, hay que
+  poner en los créditos: "Graphics created by Penzilla Design".
+  Para un juego comercial hay que comprarlo (licencia estándar del pack).
+
+Aviso: la carpeta está en OneDrive; Unity crea miles de archivos en Library y
+OneDrive puede ir lento. Mejor mover el proyecto fuera de OneDrive.
